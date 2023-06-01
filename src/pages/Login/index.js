@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import * as Animatable from 'react-native-animatable'
@@ -24,6 +24,14 @@ export default function Login(){
             let errorMessage = error.message;
         });
     }
+
+    useEffect(()=>{
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                navigation.navigate("Task", { idUser: user.uid })
+            } 
+        });
+    }, []);
 
     const navigation = useNavigation();
 

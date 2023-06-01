@@ -38,11 +38,26 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+    buttonLogout:{
+        width: 60,
+        height: 60,
+        position: "absolute",
+        backgroundColor: "#fff",
+        bottom: 30,
+        right: 20,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    iconButtonLogout: {
+        color: "#ffffff",
+        fontSize: 25,
+        fontWeight: "bold",
+    },
     iconButton: {
         color: "#ffffff",
         fontSize: 30,
         fontWeight: "bold",
-    }
+    },
 });
 
 export default styles

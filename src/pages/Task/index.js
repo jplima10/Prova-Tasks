@@ -1,27 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList } from "react-native/";
 import firebase from "../../config/firebaseconfig"
-import { FontAwesome } from "@expo/vector-icons"
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons"
 import styles from "./style"
 
 
-export default function Task({ navigation }){
+export default function Task({ navigation, route }){
     const [task, setTask] = useState([])
     const database = firebase.firestore()
 
-    function deleteTask(id){
-        database.collection("Tasks").doc(id).delete()
+    function logout(){
+        firebase.auth().signOut().then(() => {
+            navigation.navigate("Welcome")
+        }) .catch ((error) => {
+
+        });
     }
 
-    useEffect(()=>{
-        database.collection("Tasks").onSnapshot((query)=>{
-            const list = []
-            query.forEach((doc)=>{
-                list.push({...doc.data(), id: doc.id})
-            })
-            setTask(list)
-        })
-    }, [])
+    function deleteTask(id){
+        database.collection(route.params.idUser).doc(id).delete()
+    }
+
+    useEffect(() => {
+        const unsubscribe = database.collection(route.params.idUser).onSnapshot((querySnapshot) => {
+          const list = [];
+          querySnapshot.forEach((doc) => {
+            list.push({ ...doc.data(), id: doc.id });
+          });
+          setTask(list);
+        });
+      
+        // Retornar uma função de limpeza para remover o observador quando o componente for desmontado
+        return () => unsubscribe();
+      }, []);
+      
 
     return(
         <View style={styles.container}>
@@ -50,6 +62,7 @@ export default function Task({ navigation }){
                                 navigation.navigate("Details",{
                                     id: item.id,
                                     description: item.description,
+                                    idUser: route.params.idUser
                                 })
                             }
                         >
@@ -62,10 +75,24 @@ export default function Task({ navigation }){
             />
             <TouchableOpacity 
                 style={styles.buttonNewTask}
-                onPress={()=> navigation.navigate("New Task")}
-            >
+                onPress={() => navigation.navigate("New Task", { idUser: route.params.idUser, updateList: setTask })}
+                >
                 <text style={styles.iconButton}>+</text>
+            </TouchableOpacity> 
+
+            <TouchableOpacity 
+                style={styles.buttonLogout}
+                onPress={() => {logout()}}
+            >
+                <Text style={styles.iconButtonLogout}>
+                    <MaterialCommunityIcons
+                        name="exit-to-app"
+                        size={23}
+                        color="#F92E6A"
+                    />
+                </Text>
             </TouchableOpacity>
+
         </View>
     )
 }
