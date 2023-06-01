@@ -6,17 +6,27 @@ import * as Animatable from 'react-native-animatable'
 
 import { useNavigation } from "@react-navigation/native";
 
-export default function Login(){
+export default function Cadastro(){
 
     const navigation = useNavigation();
 
     return(
         <View style={styles.container}>
             <Animatable.View animation='fadeInLeft' delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}>Bem Vindo(a)</Text>
+                <Text style={styles.message}>Registre-se</Text>
             </Animatable.View>
 
             <Animatable.View animation='fadeInUp' style={styles.containerForm}>
+                <Text style={styles.title}>Nome completo</Text>
+                <TextInput 
+                    placeholder= "Digite seu nome completo"
+                    style={styles.input}
+                />
+                <Text style={styles.title}>Apelido</Text>
+                <TextInput 
+                    placeholder= "Como você deseja ser chamado"
+                    style={styles.input}
+                />
                 <Text style={styles.title}>Email</Text>
                 <TextInput 
                     placeholder= "Digite seu e-mail"
@@ -32,11 +42,7 @@ export default function Login(){
                     style={styles.button}
                     onPress={ () => navigation.navigate('Task')}
                 >
-                    <Text style={styles.buttonText}>Acessar</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.buttonRegistro} onPress={ () => navigation.navigate('Cadastro')}>
-                    <Text style={styles.registerText}>Não possui uma conta? Registre-se</Text>
+                    <Text style={styles.buttonText}>Criar Conta</Text>
                 </TouchableOpacity>
                                
             </Animatable.View>

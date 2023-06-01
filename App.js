@@ -7,6 +7,7 @@ import Details from "./src/pages/Details/";
 import Welcome from './src/pages/Welcome'
 import Login from './src/pages/Login'
 import Homes from './src/pages/Homes'
+import Cadastro from './src/pages/Cadastro'
 
 const Stack = createStackNavigator()
 
@@ -24,6 +25,12 @@ export default function App() {
         <Stack.Screen
           name="Login"
           component={Login}
+          options={{ headerShown: false }}
+        />
+        
+        <Stack.Screen
+          name="Cadastro"
+          component={Cadastro}
           options={{ headerShown: false }}
         />
 
