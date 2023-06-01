@@ -8,34 +8,38 @@ import { useNavigation } from "@react-navigation/native";
 
 import firebase from "../../config/firebaseconfig";
 
-export default function Login(){
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons"
+
+export default function Login() {
 
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
+    const [errorLogin, setErrorLogin] = useState("")
 
-    const loginFirebase = ()=> {
+    const loginFirebase = () => {
         firebase.auth().signInWithEmailAndPassword(email, senha)
-        .then((userCredential) => {
-            let user = userCredential.user;
-            navigation.navigate("Task", {idUser: user.uid})
-        })
-        .catch((error) =>{
-            let errorCode = error.code;
-            let errorMessage = error.message;
-        });
+            .then((userCredential) => {
+                let user = userCredential.user;
+                navigation.navigate("Task", { idUser: user.uid })
+            })
+            .catch((error) => {
+                setErrorLogin(true)
+                let errorCode = error.code;
+                let errorMessage = error.message;
+            });
     }
 
-    useEffect(()=>{
-        firebase.auth().onAuthStateChanged(function(user) {
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 navigation.navigate("Task", { idUser: user.uid })
-            } 
+            }
         });
     }, []);
 
     const navigation = useNavigation();
 
-    return(
+    return (
         <View style={styles.container}>
             <Animatable.View animation='fadeInLeft' delay={500} style={styles.containerHeader}>
                 <Text style={styles.message}>Bem Vindo(a)</Text>
@@ -43,56 +47,79 @@ export default function Login(){
 
             <Animatable.View animation='fadeInUp' style={styles.containerForm}>
                 <Text style={styles.title}>Email</Text>
-                <TextInput 
-                    placeholder= "Digite seu e-mail"
+                <TextInput
+                    placeholder="Digite seu e-mail"
                     style={styles.input}
                     onChangeText={(text) => setEmail(text)}
                     value={email}
                 />
                 <Text style={styles.title}>Senha</Text>
-                <TextInput 
+                <TextInput
                     secureTextEntry={true}
-                    placeholder= "Digite sua senha"
+                    placeholder="Digite sua senha"
                     style={styles.input}
                     onChangeText={(text) => setSenha(text)}
                     value={senha}
                 />
+                {errorLogin === true
+                    ?
+                    <View style={styles.contentAlert}>
+                        <MaterialCommunityIcons
+                            name="alert-circle"
+                            size={24}
+                            color="red"
+                        />
+                        <Text style={styles.warningAlert}>Usuário e/ou senha inválidos</Text>
+                    </View>
+                    :
+                    <View />
+                }
 
-                <TouchableOpacity 
-                    style={styles.button}
-                    onPress={loginFirebase}
-                >
-                    <Text style={styles.buttonText}>Acessar</Text>
-                </TouchableOpacity>
+                {email === '' || senha === ''
+                    ?
+                    <TouchableOpacity
+                        disabled={true}
+                        style={styles.button}
+                    >
+                        <Text style={styles.buttonText}>Preencha todos os campos</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={loginFirebase}
+                    >
+                        <Text style={styles.buttonText}>Acessar</Text>
+                    </TouchableOpacity>
+                }
 
-                <TouchableOpacity style={styles.buttonRegistro} onPress={ () => navigation.navigate('Cadastro')}>
+                <TouchableOpacity style={styles.buttonRegistro} onPress={() => navigation.navigate('Cadastro')}>
                     <Text style={styles.registerText}>Não possui uma conta? Registre-se</Text>
                 </TouchableOpacity>
-                               
+
             </Animatable.View>
 
         </View>
-    ); 
+    );
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
         backgroundColor: '#F92e6a',
     },
-    containerHeader:{
+    containerHeader: {
         marginTop: '14%',
         marginBottom: '8%',
         paddingStart: '5%',
         alignItems: "center"
 
     },
-    message:{
+    message: {
         fontSize: 28,
         fontWeight: 'bold',
         color: '#FFF',
     },
-    containerForm:{
+    containerForm: {
         backgroundColor: '#FFF',
         flex: 1,
         borderTopLeftRadius: 25,
@@ -100,18 +127,18 @@ const styles = StyleSheet.create({
         paddingStart: '5%',
         paddingEnd: '5%',
     },
-    title:{
+    title: {
         fontSize: 20,
         marginTop: 28,
     },
-    input:{
+    input: {
         borderBottomWidth: 1,
         height: 40,
         marginBottom: 12,
         fontSize: 16,
-    },  
-    button:{
-        backgroundColor:'#F92e6a',
+    },
+    button: {
+        backgroundColor: '#F92e6a',
         width: '100%',
         borderRadius: 4,
         paddingVertical: 8,
@@ -119,16 +146,27 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    buttonText:{
+    contentAlert: {
+        marginTop: 20,
+        flexDirection:"row",
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    warningAlert: {
+        paddingLeft: 10,
+        color: "red",
+        fontSize: 16
+    },
+    buttonText: {
         color: '#FFF',
         fontSize: 18,
         fontWeight: 'bold',
     },
-    buttonRegistro:{
+    buttonRegistro: {
         marginTop: 14,
         alignSelf: 'center',
     },
-    registerText:{
+    registerText: {
         color: '#a1a1a1'
     }
 })

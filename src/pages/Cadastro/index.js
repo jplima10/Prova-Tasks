@@ -8,10 +8,14 @@ import { useNavigation } from "@react-navigation/native";
 
 import firebase from "../../config/firebaseconfig";
 
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons"
+
 export default function Cadastro(){
 
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
+    const [errorCadastro, setErrorCadastro] = useState("")
+
 
     const cadastroFirebase = ()=> {
         firebase.auth().createUserWithEmailAndPassword(email, senha)
@@ -20,6 +24,7 @@ export default function Cadastro(){
             navigation.navigate("Task", {idUser: user.uid})
         })
         .catch((error) =>{
+            setErrorCadastro(true)
             let errorCode = error.code;
             let errorMessage = error.message;
         });
@@ -60,14 +65,38 @@ export default function Cadastro(){
                     value={senha}
 
                 />
-
-                <TouchableOpacity 
-                    style={styles.button}
-                    onPress={cadastroFirebase}
-                >
-                    <Text style={styles.buttonText}>Criar Conta</Text>
+                {errorCadastro === true
+                    ?
+                    <View style={styles.contentAlert}>
+                        <MaterialCommunityIcons
+                            name="alert-circle"
+                            size={24}
+                            color="red"
+                        />
+                        <Text style={styles.warningAlert}>Usuário e/ou senha inválidos</Text>
+                    </View>
+                    :
+                    <View />
+                }
+                {email === '' || senha === ''
+                    ?
+                    <TouchableOpacity
+                        disabled={true}
+                        style={styles.button}
+                    >
+                        <Text style={styles.buttonText}>Preencha todos os campos</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={cadastroFirebase}
+                    >
+                        <Text style={styles.buttonText}>Criar Conta</Text>
+                    </TouchableOpacity>
+                }
+                <TouchableOpacity style={styles.buttonRegistro} onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.registerText}>Já tem uma conta? Faça login</Text>
                 </TouchableOpacity>
-                               
             </Animatable.View>
 
         </View>
