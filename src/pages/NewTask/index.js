@@ -17,7 +17,7 @@ export default function NewTask({ navigation }){
 
     return(
         <View style={styles.container}>
-          <Text style={styles.label}>Description</Text>
+          <Text style={styles.label}>Descrição</Text>
           <TextInput
           style={styles.input}
           placeholder="Ex: estudar javascript"
