@@ -1,12 +1,29 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import * as Animatable from 'react-native-animatable'
 
 import { useNavigation } from "@react-navigation/native";
 
+import firebase from "../../config/firebaseconfig";
+
 export default function Cadastro(){
+
+    const [email, setEmail] = useState("")
+    const [senha, setSenha] = useState("")
+
+    const cadastroFirebase = ()=> {
+        firebase.auth().createUserWithEmailAndPassword(email, senha)
+        .then((userCredential) => {
+            let user = userCredential.user;
+            navigation.navigate("Task", {idUser: user.uid})
+        })
+        .catch((error) =>{
+            let errorCode = error.code;
+            let errorMessage = error.message;
+        });
+    }
 
     const navigation = useNavigation();
 
@@ -31,16 +48,22 @@ export default function Cadastro(){
                 <TextInput 
                     placeholder= "Digite seu e-mail"
                     style={styles.input}
+                    onChangeText={(text) => setEmail(text)}
+                    value={email}
                 />
                 <Text style={styles.title}>Senha</Text>
                 <TextInput 
+                    secureTextEntry={true}
                     placeholder= "Digite sua senha"
                     style={styles.input}
+                    onChangeText={(text) => setSenha(text)}
+                    value={senha}
+
                 />
 
                 <TouchableOpacity 
                     style={styles.button}
-                    onPress={ () => navigation.navigate('Task')}
+                    onPress={cadastroFirebase}
                 >
                     <Text style={styles.buttonText}>Criar Conta</Text>
                 </TouchableOpacity>
