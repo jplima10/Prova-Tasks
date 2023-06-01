@@ -9,9 +9,6 @@ export default function NewTask({ navigation, route }) {
 
   const database = firebase.firestore()
 
-
-  // ...
-
   function addTask() {
     database
       .collection(route.params.idUser)
@@ -26,8 +23,6 @@ export default function NewTask({ navigation, route }) {
         console.log(error);
       });
   }
-
-  // ...
 
 
   return (

@@ -9,20 +9,22 @@ export default function Details({ navigation, route }) {
   const database = firebase.firestore();
 
   function editTask(description, id) {
-    database
-      .collection(route.params.idUser)
-      .doc(id)
+    const taskRef = database.collection(route.params.idUser).doc(id);
+    
+    taskRef
       .update({
         description: description,
       })
       .then(() => {
-        navigation.navigate("Task");
-        route.params.updateList(); // Chama a função de atualização de lista passada por parâmetro
+        navigation.goBack();
+        route.params.updateList(); 
       })
       .catch((error) => {
         console.log(error);
       });
   }
+  
+  
 
   return (
     <View style={styles.container}>
