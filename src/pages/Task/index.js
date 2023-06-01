@@ -1,98 +1,103 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native/";
-import firebase from "../../config/firebaseconfig"
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons"
-import styles from "./style"
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import firebase from "../../config/firebaseconfig";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import styles from "./style";
 
+export default function Task({ navigation, route }) {
+  const [task, setTask] = useState([]);
+  const database = firebase.firestore();
 
-export default function Task({ navigation, route }){
-    const [task, setTask] = useState([])
-    const database = firebase.firestore()
+  function logout() {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        navigation.navigate("Welcome");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-    function logout(){
-        firebase.auth().signOut().then(() => {
-            navigation.navigate("Welcome")
-        }) .catch ((error) => {
+  function deleteTask(id) {
+    const confirmed = window.confirm(
+      "Você tem certeza que deseja apagar esta tarefa?"
+    );
 
-        });
+    if (confirmed) {
+      database.collection(route.params.idUser).doc(id).delete();
     }
+  }
 
-    function deleteTask(id){
-        database.collection(route.params.idUser).doc(id).delete()
-    }
-
-    useEffect(() => {
-        const unsubscribe = database.collection(route.params.idUser).onSnapshot((querySnapshot) => {
-          const list = [];
-          querySnapshot.forEach((doc) => {
-            list.push({ ...doc.data(), id: doc.id });
-          });
-          setTask(list);
+  useEffect(() => {
+    const unsubscribe = database
+      .collection(route.params.idUser)
+      .onSnapshot((querySnapshot) => {
+        const list = [];
+        querySnapshot.forEach((doc) => {
+          list.push({ ...doc.data(), id: doc.id });
         });
-      
-        // Retornar uma função de limpeza para remover o observador quando o componente for desmontado
-        return () => unsubscribe();
-      }, []);
-      
+        setTask(list);
+      });
 
-    return(
-        <View style={styles.container}>
-            <FlatList
-                showsVerticalScrollIndicator={false}
-                data={task}
-                renderItem={( {item} )=>{
-                    return(
-                    <View style={styles.Tasks}>
-                        <TouchableOpacity 
-                            style={styles.deleteTask}
-                            onPress={()=> {
-                                deleteTask(item.id)
-                            }}
-                        >
-                        <FontAwesome
-                            name="trash"
-                            size={23}
-                            color="#F92e6a"
-                        >
-                        </FontAwesome>
-                        </TouchableOpacity>
-                        <Text
-                            style={styles.DescriptionTask}
-                            onPress={()=>
-                                navigation.navigate("Details",{
-                                    id: item.id,
-                                    description: item.description,
-                                    idUser: route.params.idUser
-                                })
-                            }
-                        >
-                        {item.description}  
-                        </Text>  
+    // Retornar uma função de limpeza para remover o observador quando o componente for desmontado
+    return () => unsubscribe();
+  }, []);
 
-                    </View>
-                    )
+  return (
+    <View style={styles.container}>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={task}
+        renderItem={({ item }) => {
+          return (
+            <View style={styles.Tasks}>
+              <TouchableOpacity
+                style={styles.deleteTask}
+                onPress={() => {
+                  deleteTask(item.id);
                 }}
-            />
-            <TouchableOpacity 
-                style={styles.buttonNewTask}
-                onPress={() => navigation.navigate("New Task", { idUser: route.params.idUser, updateList: setTask })}
-                >
-                <text style={styles.iconButton}>+</text>
-            </TouchableOpacity> 
+              >
+                <FontAwesome name="trash" size={23} color="#F92e6a" />
+              </TouchableOpacity>
+              <Text
+                style={styles.DescriptionTask}
+                onPress={() =>
+                  navigation.navigate("Details", {
+                    id: item.id,
+                    description: item.description,
+                    idUser: route.params.idUser,
+                  })
+                }
+              >
+                {item.description}
+              </Text>
+            </View>
+          );
+        }}
+      />
+      <TouchableOpacity
+        style={styles.buttonNewTask}
+        onPress={() =>
+          navigation.navigate("New Task", {
+            idUser: route.params.idUser,
+            updateList: setTask,
+          })
+        }
+      >
+        <Text style={styles.iconButton}>+</Text>
+      </TouchableOpacity>
 
-            <TouchableOpacity 
-                style={styles.buttonLogout}
-                onPress={() => {logout()}}
-            >
-                <Text style={styles.iconButtonLogout}>
-                    <MaterialCommunityIcons
-                        name="exit-to-app"
-                        size={23}
-                        color="#F92E6A"
-                    />
-                </Text>
-            </TouchableOpacity>
-
-        </View>
-    )
+      <TouchableOpacity style={styles.buttonLogout} onPress={logout}>
+        <Text style={styles.iconButtonLogout}>
+          <MaterialCommunityIcons
+            name="exit-to-app"
+            size={23}
+            color="red"
+          />
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
